@@ -9,7 +9,7 @@ class BinarySemaphore {
 
     public synchronized void P() { //acquire
         this.waitingThreads++;
-        while (!this.available){
+        if (!this.available){
             try {
                 this.wait();
             } catch (InterruptedException e) {
