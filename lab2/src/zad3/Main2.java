@@ -13,9 +13,9 @@ class Main2 {
         threadList.forEach(Thread::start);
 
         threadList.forEach(t -> {
-            try{
+            try {
                 t.join();
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         });

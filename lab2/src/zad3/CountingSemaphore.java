@@ -19,7 +19,7 @@ class CountingSemaphore {
         this.countAccess.P();
 
         this.count--;
-        if(this.count > 0){
+        if (this.count > 0) {
             this.canDecrease.V();
         }
 
@@ -30,7 +30,7 @@ class CountingSemaphore {
         this.countAccess.P();
 
         this.count++;
-        if(this.count >= 1){
+        if (this.count >= 1) {
             this.canDecrease.V();
         }
 

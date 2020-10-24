@@ -11,7 +11,7 @@ public class BinarySemaphore {
 
     public synchronized void P() { //acquire
         this.waitingThreads++;
-        while (!this.available){
+        while (!this.available) {
             try {
                 this.wait();
             } catch (InterruptedException e) {
@@ -23,7 +23,7 @@ public class BinarySemaphore {
     }
 
     public synchronized void V() { //release
-        if(this.waitingThreads > 0){
+        if (this.waitingThreads > 0) {
             this.notify();
         }
         this.available = true;

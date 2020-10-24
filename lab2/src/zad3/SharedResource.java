@@ -1,17 +1,15 @@
 package zad3;
 
-import zad3.CountingSemaphore;
-
 import java.util.concurrent.ThreadLocalRandom;
 
 class SharedResource {
     private final CountingSemaphore semaphore;
 
-    SharedResource(int k){
+    SharedResource(int k) {
         this.semaphore = new CountingSemaphore(k);
     }
 
-    public void getKey(){
+    public void getKey() {
         semaphore.P();
 
         System.out.println("Thread "
