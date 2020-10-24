@@ -3,13 +3,17 @@ class BinarySemaphore {
     private int waitingThreads;
 
     public BinarySemaphore() {
-        this.available = true;
+        this(true);
+    }
+
+    public BinarySemaphore(boolean state){
+        this.available = state;
         this.waitingThreads = 0;
     }
 
     public synchronized void P() { //acquire
         this.waitingThreads++;
-        if (!this.available){
+        while (!this.available){
             try {
                 this.wait();
             } catch (InterruptedException e) {

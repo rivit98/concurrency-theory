@@ -1,2 +1,7 @@
-package PACKAGE_NAME;public interface BufferInterface {
+public interface IBuffer {
+    int getProductsNum();
+
+    void put(int i);
+
+    int get();
 }

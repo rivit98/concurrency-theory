@@ -1,16 +1,14 @@
 import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.IntStream;
 
 class Producer extends Thread {
-    private final Buffer _buf;
+    private final IBuffer _buf;
     private final int _iters;
     private final Random random = new Random();
 
-    public Producer(Buffer _buf, int iters) {
+    public Producer(IBuffer _buf, int iters) {
         this._buf = _buf;
         this._iters = iters;
     }
@@ -19,7 +17,7 @@ class Producer extends Thread {
         for (int i = 0; i < this._iters; ++i) {
             _buf.put(i);
             try {
-                Thread.sleep(random.nextInt(500));
+                Thread.sleep(random.nextInt(300));
             } catch (InterruptedException ignored) {
 
             }
@@ -28,11 +26,11 @@ class Producer extends Thread {
 }
 
 class Consumer extends Thread {
-    private final Buffer _buf;
+    private final IBuffer _buf;
     private final int _iters;
     private final Random random = new Random();
 
-    public Consumer(Buffer _buf, int iters) {
+    public Consumer(IBuffer _buf, int iters) {
         this._buf = _buf;
         this._iters = iters;
     }
@@ -41,7 +39,7 @@ class Consumer extends Thread {
         for (int i = 0; i < this._iters; ++i) {
             _buf.get();
             try {
-                Thread.sleep(random.nextInt(500) + 100);
+                Thread.sleep(random.nextInt(300) + 100);
             } catch (InterruptedException ignored) {
 
             }
@@ -49,7 +47,7 @@ class Consumer extends Thread {
     }
 }
 
-class Buffer {
+class Buffer implements IBuffer {
     private final LinkedList<Integer> _buf = new LinkedList<>();
     private final int MAX_ITEMS_IN_BUFFER = 10;
 
