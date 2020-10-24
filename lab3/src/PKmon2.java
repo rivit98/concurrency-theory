@@ -47,14 +47,10 @@ class Buffer2 implements IBuffer {
 }
 
 public class PKmon2 {
-    public static void main(String[] args) throws InterruptedException {
-        runCase(1, 1);
-        runCase(5, 2);
-        runCase(2, 5);
-        runCase(1, 2);
-        runCase(2, 1);
-        runCase(20, 2);
-        runCase(2, 20);
+    public static void main(String[] args) {
+        runCase(1, 1); // n1 = n2 = 1
+        runCase(5, 2); // n1, n2 > 1
+        runCase(2, 5); // n1, n2 > 1
     }
 
     public static void runCase(int producersNum, int consumersNum){

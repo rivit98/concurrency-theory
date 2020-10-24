@@ -51,10 +51,12 @@ class Buffer implements IBuffer {
     private final LinkedList<Integer> _buf = new LinkedList<>();
     private final int MAX_ITEMS_IN_BUFFER = 10;
 
+    @Override
     public int getProductsNum(){
         return this._buf.size();
     }
 
+    @Override
     public synchronized void put(int i) {
         while(this._buf.size() >= MAX_ITEMS_IN_BUFFER){
             try {
@@ -69,6 +71,7 @@ class Buffer implements IBuffer {
         this.notifyAll();
     }
 
+    @Override
     public synchronized int get() {
         while(this._buf.isEmpty()){
             try {
