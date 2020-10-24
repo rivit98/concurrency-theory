@@ -1,3 +1,9 @@
+package zad2;
+
+import utils.BinarySemaphore;
+import utils.CountingSemaphore;
+import zad1.IBuffer;
+
 import java.util.LinkedList;
 
 class Buffer2 implements IBuffer {

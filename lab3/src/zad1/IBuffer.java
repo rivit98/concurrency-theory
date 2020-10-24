@@ -1,3 +1,5 @@
+package zad1;
+
 public interface IBuffer {
     int getProductsNum();
 

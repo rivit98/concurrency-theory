@@ -1,5 +1,9 @@
+package zad2;
+
+import zad1.Consumer;
+import zad1.Producer;
+
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.stream.IntStream;
 
 public class PKmon2 {
@@ -9,7 +13,7 @@ public class PKmon2 {
         runCase(2, 5); // n1, n2 > 1
     }
 
-    public static void runCase(int producersNum, int consumersNum){
+    public static void runCase(int producersNum, int consumersNum) {
         System.out.println(
                 "Producers: " + producersNum +
                         " | Consumers: " + consumersNum
@@ -37,9 +41,9 @@ public class PKmon2 {
         threadList.forEach(Thread::start);
 
         threadList.forEach(t -> {
-            try{
+            try {
                 t.join();
-            }catch (InterruptedException e){
+            } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         });

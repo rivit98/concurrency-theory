@@ -1,5 +1,6 @@
+package zad3;
+
 import java.util.*;
-import java.util.concurrent.Semaphore;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -9,7 +10,7 @@ public class Pipe {
         IntStream.range(0, 10).forEach(i -> runCase());
     }
 
-    public static void runCase(){
+    public static void runCase() {
         var BUFFER_SIZE = 100;
 
         Function<Integer, Integer> multByTwo = i -> (2 * i);
@@ -52,7 +53,7 @@ public class Pipe {
                         .mapToObj(i -> {
                             List<Object> tempList = new ArrayList<>(transforms.size());
                             tempList.add(i);
-                            transforms.forEach(t ->{
+                            transforms.forEach(t -> {
                                 Object o = tempList.get(tempList.size() - 1);
                                 tempList.add(t.apply(o));
                             });

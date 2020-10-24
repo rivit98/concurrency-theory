@@ -1,14 +1,13 @@
-import java.util.LinkedList;
-import java.util.List;
+package zad3;
+
 import java.util.Random;
 import java.util.stream.IntStream;
 
-class Consumer2 extends Thread {
+class Producer2 extends Thread {
     private final Buffer3 _buf;
     private final Random random = new Random();
-    private final List<String> results = new LinkedList<>();
 
-    public Consumer2(Buffer3 buffer) {
+    public Producer2(Buffer3 buffer) {
         _buf = buffer;
     }
 
@@ -19,13 +18,7 @@ class Consumer2 extends Thread {
             } catch (InterruptedException ignored) {
             }
 
-            Object obj = _buf.get(i);
-//            System.out.println(obj.toString());
-            results.add(obj.toString());
+            _buf.put(i);
         });
-    }
-
-    public List<String> getResults() {
-        return results;
     }
 }

@@ -1,21 +1,21 @@
+package zad1;
+
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Random;
 import java.util.stream.IntStream;
 
 public class PKmon {
     public static void main(String[] args) {
         runCase(1, 1); // n1 = n2 = 1
-        runCase(2,2);
+        runCase(2, 2);
         runCase(5, 2); // n1 > n2
         runCase(5, 5); // n1 = n2 = 5
         runCase(2, 5); // n1 < n2
     }
 
-    public static void runCase(int producersNum, int consumersNum){
+    public static void runCase(int producersNum, int consumersNum) {
         System.out.println(
                 "Producers: " + producersNum +
-                " | Consumers: " + consumersNum
+                        " | Consumers: " + consumersNum
         );
         var lcm = lcm(producersNum, consumersNum);
         var products = lcm * 10;
@@ -40,9 +40,9 @@ public class PKmon {
         threadList.forEach(Thread::start);
 
         threadList.forEach(t -> {
-            try{
+            try {
                 t.join();
-            }catch (InterruptedException e){
+            } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         });

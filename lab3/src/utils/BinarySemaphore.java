@@ -1,4 +1,6 @@
-class BinarySemaphore {
+package utils;
+
+public class BinarySemaphore {
     private boolean available;
     private int waitingThreads;
 
@@ -6,14 +8,14 @@ class BinarySemaphore {
         this(true);
     }
 
-    public BinarySemaphore(boolean state){
+    public BinarySemaphore(boolean state) {
         this.available = state;
         this.waitingThreads = 0;
     }
 
     public synchronized void P() { //acquire
         this.waitingThreads++;
-        while (!this.available){
+        while (!this.available) {
             try {
                 this.wait();
             } catch (InterruptedException e) {
@@ -25,7 +27,7 @@ class BinarySemaphore {
     }
 
     public synchronized void V() { //release
-        if(this.waitingThreads > 0){
+        if (this.waitingThreads > 0) {
             this.notify();
         }
         this.available = true;
