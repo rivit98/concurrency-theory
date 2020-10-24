@@ -3,7 +3,7 @@ package zad3;
 import java.util.ArrayList;
 import java.util.stream.IntStream;
 
-class Main2 {
+class Main {
     public static void main(String[] args) {
         int keysNum = 3;
         SharedResource sr = new SharedResource(keysNum);
