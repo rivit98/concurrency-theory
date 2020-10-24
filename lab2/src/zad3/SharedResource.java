@@ -1,3 +1,7 @@
+package zad3;
+
+import zad3.CountingSemaphore;
+
 import java.util.concurrent.ThreadLocalRandom;
 
 class SharedResource {

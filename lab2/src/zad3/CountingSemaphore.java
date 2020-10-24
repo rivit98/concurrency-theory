@@ -1,3 +1,7 @@
+package zad3;
+
+import zad1.BinarySemaphore;
+
 class CountingSemaphore {
     private int count;
     private final BinarySemaphore countAccess;

@@ -1,3 +1,5 @@
+package zad3;
+
 class KeyThread extends Thread {
     private final SharedResource sr;
 

@@ -1,4 +1,6 @@
-class Counter {
+package zad2;
+
+public class Counter {
     BinarySemaphore semaphore = new BinarySemaphore();
     private int _val;
 

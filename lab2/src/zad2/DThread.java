@@ -1,9 +1,11 @@
+package zad2;
+
 import java.util.stream.IntStream;
 
-class DThread extends Thread {
+public class DThread extends Thread {
     public final Counter counter;
 
-    DThread(Counter c) {
+    public DThread(Counter c) {
         this.counter = c;
     }
 

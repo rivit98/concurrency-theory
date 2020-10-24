@@ -1,4 +1,6 @@
-class BinarySemaphore {
+package zad1;
+
+public class BinarySemaphore {
     private boolean available;
     private int waitingThreads;
 
