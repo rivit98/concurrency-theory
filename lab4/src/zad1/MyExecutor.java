@@ -1,10 +1,7 @@
 package zad1;
 
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CountDownLatch;
 
 public class MyExecutor implements IExecutor {
     private final List<Thread> workers = new LinkedList<>();
@@ -29,10 +26,5 @@ public class MyExecutor implements IExecutor {
             } catch (InterruptedException ignored) {
             }
         });
-    }
-
-    @Override
-    public CountDownLatch getLatch() throws Exception {
-        throw new Exception("Not imlpemented");
     }
 }

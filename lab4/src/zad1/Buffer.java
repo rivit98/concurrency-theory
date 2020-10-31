@@ -9,8 +9,8 @@ class Buffer implements IBuffer {
     private final LinkedList<Integer> buffer = new LinkedList<>();
     private final int maxBufferSize;
     private final Object lock = new Object();
-    private Integer producersRunning = 0;
-    private Integer consumersRunning = 0;
+    private Integer producersRunning;
+    private Integer consumersRunning;
 
     public Buffer(int size, int m, int n) {
         maxBufferSize = size * 2;

@@ -3,7 +3,6 @@ package zad1;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.Callable;
 
 
 class Consumer extends Thread {
@@ -21,12 +20,6 @@ class Consumer extends Thread {
     }
 
     public void run() {
-//        System.out.println(Thread.currentThread().getId() + "c");
-//        try {
-//            executor.getLatch().countDown();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
         for (int i = 0; i < iterations; i++) {
             var howMany = Math.max(1, random.nextInt(consumeLimit)-1);
             List<Integer> results = new LinkedList<>();

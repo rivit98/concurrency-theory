@@ -1,7 +1,6 @@
 package zad1;
 
 import java.util.Random;
-import java.util.concurrent.Callable;
 import java.util.stream.IntStream;
 
 
@@ -12,7 +11,6 @@ class Producer extends Thread {
     private final int iterations;
     private final IExecutor executor;
 
-
     public Producer(IExecutor ex, IBuffer buf, int iters) {
         iterations = iters;
         buffer = buf;
@@ -21,12 +19,6 @@ class Producer extends Thread {
     }
 
     public void run() {
-//        System.out.println(Thread.currentThread().getId() + "p");
-//        try {
-//            executor.getLatch().countDown();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
         for(int i = 0; i < iterations; i++) {
             var howMany = Math.max(1, random.nextInt(produceLimit)-1);
             int[] data = new int[howMany];

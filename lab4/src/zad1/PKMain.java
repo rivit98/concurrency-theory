@@ -5,12 +5,8 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
 
@@ -21,12 +17,9 @@ public class PKMain {
     }
 
     public static void main(String[] args) {
-        var producers = List.of(3, 8, 15);
-        var consumers = List.of(3, 8, 15);
-        var bufferSizes = List.of(5, 10, 25, 50);
-//        var bufferSizes = List.of(5);
-//        var producers = List.of(3);
-//        var consumers = List.of(8);
+        var producers = List.of(3, 10, 20);
+        var consumers = List.of(3, 10, 20);
+        var bufferSizes = List.of(5, 10, 50, 100);
 
         var results = new LinkedList<String>();
 
@@ -35,11 +28,9 @@ public class PKMain {
                 for (var bs : bufferSizes) {
                     var avg1 = testCaseWrapper(p, c, bs, MODE.MODE_MONITORS);
                     var avg2 = testCaseWrapper(p, c, bs, MODE.MODE_CONCURRENT_LIB);
-//                    var avg1 = 0.0;
-//                    var avg2 = 0.0;
-//                    testCaseWrapper(p, c, bs, MODE.MODE_MONITORS);
+
                     System.out.println(p + "p/" + c + "c [" + bs + "]: " + avg1 + "ms / " + avg2 + "ms");
-                    results.add(p + ", " + c + ", " + bs + ", " + avg1 + ", " + avg2);
+                    results.add(p + ", " + c + ", " + bs + ", " + round(avg1, 2) + ", " + round(avg2, 2));
                 }
             }
         }
@@ -52,12 +43,16 @@ public class PKMain {
         }
     }
 
+    public static double round(double v, int places){
+        v = Math.round(v * Math.pow(10, places));
+        v = v / Math.pow(10, places);
+        return v;
+    }
+
     public static double testCaseWrapper(int prodNum, int consNum, int halfBufSize, MODE mode) {
         var times = new LinkedList<Long>();
 
         IntStream.range(0, 200).forEach(i -> {
-//            System.out.println(prodNum + "p/" + consNum + "c [" + halfBufSize + "]");
-
             long before = System.currentTimeMillis();
 
             if (mode == MODE.MODE_CONCURRENT_LIB) {
@@ -69,8 +64,6 @@ public class PKMain {
             long after = System.currentTimeMillis();
             long diff = after - before;
             times.add(diff);
-
-//            System.out.println("===========");
         });
 
         return times.stream().mapToLong(i -> i).average().getAsDouble();
