@@ -2,97 +2,76 @@ package zad1;
 
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.stream.Collectors;
 
-class Buffer {
+class Buffer implements IBuffer {
     private final LinkedList<Integer> buffer = new LinkedList<>();
     private final int maxBufferSize;
     private final Object lock = new Object();
     private Integer producersRunning = 0;
     private Integer consumersRunning = 0;
 
-    public Buffer(int size) {
+    public Buffer(int size, int m, int n) {
         maxBufferSize = size * 2;
+        producersRunning = m;
+        consumersRunning = n;
     }
 
-    public void registerProducer() {
-        synchronized (lock) {
-            producersRunning++;
-        }
-    }
-
+    @Override
     public void unregisterProducer() {
         synchronized (lock) {
             producersRunning--;
-            checkEnd();
         }
     }
 
-    public void registerConsumer() {
-        synchronized (lock) {
-            consumersRunning++;
-        }
-    }
-
+    @Override
     public void unregisterConsumer() {
         synchronized (lock) {
             consumersRunning--;
-            checkEnd();
         }
     }
 
-    public void checkEnd() {
-        if (isJobFinished()) {
-            notifyAll();
-        }
+    @Override
+    public boolean isAnySideInterested() {
+        return producersRunning > 0 && consumersRunning > 0;
     }
 
-    public boolean isJobFinished() {
-        return producersRunning <= 0 || consumersRunning <= 0;
-    }
-
+    @Override
     public int maxSize() {
         return maxBufferSize;
     }
 
-    public synchronized void put(int[] products) {
-        while (!isJobFinished() && buffer.size() + products.length >= maxBufferSize) {
-            try {
-                wait();
-            } catch (InterruptedException ignored) {
-            }
+    @Override
+    public synchronized void put(int[] products) throws InterruptedException {
+        while (isAnySideInterested() && (buffer.size() + products.length >= maxBufferSize)) {
+            wait();
         }
 
-        if (isJobFinished()) {
-            notifyAll();
+        if (!isAnySideInterested()) {
             return;
         }
 
         buffer.addAll(Arrays.stream(products).boxed().collect(Collectors.toList()));
-//        System.out.println("producing " + Arrays.toString(products));
-//        System.out.println("Buffer: " + buffer.toString());
         notifyAll();
     }
 
-    public synchronized int[] get(int howMany) {
-        while (!isJobFinished() && buffer.size() < howMany) {
-            try {
-                wait();
-            } catch (InterruptedException ignored) {
-            }
+    @Override
+    public synchronized void get(List<Integer> results, int howMany) throws InterruptedException {
+        while (isAnySideInterested() && buffer.size() < howMany) {
+            wait();
         }
 
-        if (isJobFinished()) {
-            notifyAll();
-            return new int[]{};
+        if (!isAnySideInterested()) {
+            return;
         }
 
         var sublist = buffer.subList(0, howMany);
-        var products = sublist.stream().mapToInt(i -> i).toArray();
+        for(int i = 0; i < howMany; i++){
+            var v = sublist.get(i);
+            results.add(v);
+        }
         sublist.clear();
-//        System.out.println("Consumed: " + Arrays.toString(products));
-//        System.out.println("Buffer: " + buffer.toString());
         notifyAll();
-        return products;
     }
 }

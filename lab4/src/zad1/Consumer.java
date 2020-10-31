@@ -1,28 +1,45 @@
 package zad1;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Random;
-import java.util.stream.IntStream;
+import java.util.concurrent.Callable;
+
 
 class Consumer extends Thread {
-    private final Buffer buffer;
+    private final IBuffer buffer;
     private final int consumeLimit;
     private final int iterations;
     private final Random random = new Random();
+    private final IExecutor executor;
 
-    public Consumer(Buffer buf, int iters) {
+    public Consumer(IExecutor ex, IBuffer buf, int iters) {
         iterations = iters;
         buffer = buf;
         consumeLimit = buffer.maxSize() / 2;
-        buffer.registerConsumer();
+        executor = ex;
     }
 
     public void run() {
-        IntStream.range(0, iterations).forEach(i -> {
-            var howMany = Math.max(1, random.nextInt(consumeLimit));
-//            System.out.println("Want to consume " + howMany);
-            var res = buffer.get(howMany);
-        });
+//        System.out.println(Thread.currentThread().getId() + "c");
+//        try {
+//            executor.getLatch().countDown();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+        for (int i = 0; i < iterations; i++) {
+            var howMany = Math.max(1, random.nextInt(consumeLimit)-1);
+            List<Integer> results = new LinkedList<>();
+            try {
+                buffer.get(results, howMany);
+            } catch (InterruptedException exception) {
+                break;
+            }
+        }
 
         buffer.unregisterConsumer();
+        if (!buffer.isAnySideInterested()) {
+            executor.shutdownNow();
+        }
     }
 }
