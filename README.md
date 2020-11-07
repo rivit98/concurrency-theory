@@ -5,3 +5,4 @@ Tasks + solutions
 * [task 2](./lab2): Java monitors, binary semaphores, counting semaphores, shared resources
 * [task 3](./lab3): Producent-comsumer problem, pipeline
 * [task 4](./lab4): Producent-comsumer problem, Java Concurrency Library
+* [task 5](./lab5): Readers–writers problem, fine-grained locking
