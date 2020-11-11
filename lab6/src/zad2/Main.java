@@ -1,4 +1,4 @@
-package zad1;
+package zad2;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -7,7 +7,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.LinkedList;
-import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
@@ -25,7 +24,7 @@ class Main {
 
         System.out.println(stringBuilder.toString());
 
-        Path out = Paths.get("philosophers_deadlock.csv");
+        Path out = Paths.get("philosophers_both_forks.csv");
         try {
             Files.writeString(out, stringBuilder.toString(), Charset.defaultCharset());
         } catch (IOException e) {
@@ -36,9 +35,9 @@ class Main {
     public static long[] testCaseWrapper() {
         var times = new LinkedList<long[]>();
 
-        IntStream.range(0, 50).forEach(i -> {
+        IntStream.range(0, 10).forEach(i -> {
             var results = testCase();
-            results.ifPresent(times::add);
+            times.add(results);
         });
 
         return Arrays.stream(
@@ -54,7 +53,7 @@ class Main {
                 .toArray();
     }
 
-    public static Optional<long[]> testCase() {
+    public static long[] testCase() {
         var philosophers = new Philosopher[PHILOSOPHERS_NUM];
         var forks = new Fork[philosophers.length];
 
@@ -63,29 +62,24 @@ class Main {
         });
 
         IntStream.range(0, PHILOSOPHERS_NUM).forEach(i -> {
-            philosophers[i] = new Philosopher(i, forks[i], forks[(i + 1) % forks.length]);
+            var forkGroup = new ForkGroup(forks[i], forks[(i + 1) % forks.length]);
+            philosophers[i] = new Philosopher(i, forkGroup);
         });
 
         var executor = Executors.newFixedThreadPool(5);
         Arrays.stream(philosophers).forEach(executor::submit);
         executor.shutdown();
-        boolean finishedNormally = false;
+
         try {
-            finishedNormally = executor.awaitTermination(30, TimeUnit.SECONDS);
+            executor.awaitTermination(60, TimeUnit.SECONDS);
         } catch (InterruptedException ignored) {
         }
 
-        if (finishedNormally) {
-            var results = new long[PHILOSOPHERS_NUM];
-            IntStream.range(0, PHILOSOPHERS_NUM).forEach(i -> {
-                results[i] = philosophers[i].getStarvingTime();
-            });
+        var results = new long[PHILOSOPHERS_NUM];
+        IntStream.range(0, PHILOSOPHERS_NUM).forEach(i -> {
+            results[i] = philosophers[i].getStarvingTime();
+        });
 
-            return Optional.of(results);
-        }
-
-        System.out.println("timeout");
-        executor.shutdownNow();
-        return Optional.empty();
+        return results;
     }
 }
