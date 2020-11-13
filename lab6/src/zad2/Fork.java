@@ -1,17 +1,15 @@
 package zad2;
 
+import java.util.concurrent.Semaphore;
+
 class Fork {
-    private Boolean available = true;
+    private final Semaphore semaphore = new Semaphore(1);
 
-    public boolean isAvailable() {
-        return available;
+    public boolean tryAcquire() {
+        return semaphore.tryAcquire();
     }
 
-    public void pickUp() {
-        available = false;
-    }
-
-    public void putDown() {
-        available = true;
+    public void release() {
+        semaphore.release();
     }
 }

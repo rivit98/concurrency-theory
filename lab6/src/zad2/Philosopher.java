@@ -1,28 +1,28 @@
 package zad2;
 
 class Philosopher extends Thread {
-    private static final int EATING_TIME = 100;
+    private static final int EATING_TIME = 90;
     private static final int THINKING_TIME = 30;
-    private static final int ITERATIONS = 100;
+    private static final int ITERATIONS = 50;
 
-    private final ForkGroup forkGroup;
     private final Integer ID;
     private long starvingTime = 0;
+    private final Fork left;
+    private final Fork right;
 
-    public Philosopher(int i, ForkGroup forkGroup) {
+    public Philosopher(int i, Fork left, Fork right) {
         this.ID = i;
-        this.forkGroup = forkGroup;
+        this.left = left;
+        this.right = right;
     }
 
     @Override
     public void run() {
-        for (int i = 0; i < ITERATIONS; i++) {
+        int i = 0;
+        while (i < ITERATIONS) {
             think();
-            try {
-                eat();
-            } catch (InterruptedException exception) {
-                break;
-            }
+            eat();
+            i++;
         }
     }
 
@@ -38,23 +38,24 @@ class Philosopher extends Thread {
         action(THINKING_TIME);
     }
 
-    public void eat() throws InterruptedException {
-        synchronized (forkGroup){
-            long before = System.nanoTime();
+    public void eat() {
+        boolean success = false;
+        long before = System.currentTimeMillis();
 
-            while (!forkGroup.isAvailable()) {
-                wait();
-            }
-            forkGroup.pickUp();
-
-            long after = System.nanoTime() - before;
-            starvingTime += after;
+        while (!success) {
+            if (left.tryAcquire()) {
+                if (right.tryAcquire()) {
+                    long after = System.currentTimeMillis() - before;
+                    starvingTime += after;
 
 //            System.out.println("eating " + ID);
-            action(EATING_TIME);
+                    action(EATING_TIME);
+                    success = true;
 
-            forkGroup.putDown();
-            notify();
+                    right.release();
+                }
+                left.release();
+            }
         }
     }
 

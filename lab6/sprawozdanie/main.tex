@@ -250,75 +250,47 @@ Warto zauważyc, że zakleszczenie może wystąpić w sytuacji, gdy każdy filoz
 Zaimplementowac rozwiazanie problemu pięciu filozofów z widelcami podnoszonymi jednoczesnie. Jaki problem moze tutaj wystapic?
   
 \section{Koncept rozwiązania}
-W tym wariancie widelce zostaną pogrupowane. Stworzone zostanie pięć grup, a każda będzie zawierać dwa widelce. Każda grupa zostanie przypisana do danego filozofa. Filozof, który będzie chciał jeść będzie musiał uzyskać dostęp do swojej grupy widelców. Synchronizacja grup zostanie zapewniona przez użycie systemu monitorów.
+W tym wariancie filozof będzie podnosił oba widelce na raz - najpierw lewy, a potem prawy. Jeżeli jeden z widelców będzie zajęty to filozof zrezygnuje z jedzenia (odkładając widelce, jeśli udało mu się jakiś podnieść) i spróbuje ponownie za jakiś czas.
 
 \section{Implementacja oraz wyniki}
 \begin{minted}[frame=lines,
                 framesep=2mm
                 ]{java}
 class Fork {
-    private Boolean available = true;
+    private final Semaphore semaphore = new Semaphore(1);
 
-    public boolean isAvailable() {
-        return available;
+    public boolean tryAcquire() {
+        return semaphore.tryAcquire();
     }
 
-    public void pickUp() {
-        available = false;
-    }
-
-    public void putDown() {
-        available = true;
-    }
-}
-
-public class ForkGroup {
-    private final Fork f1;
-    private final Fork f2;
-
-    public ForkGroup(Fork f1, Fork f2) {
-        this.f1 = f1;
-        this.f2 = f2;
-    }
-
-    public boolean isAvailable() {
-        return f1.isAvailable() && f2.isAvailable();
-    }
-
-    public void pickUp() {
-        f1.pickUp();
-        f2.pickUp();
-    }
-
-    public void putDown() {
-        f1.putDown();
-        f2.putDown();
+    public void release() {
+        semaphore.release();
     }
 }
 
 class Philosopher extends Thread {
-    private static final int EATING_TIME = 100;
+    private static final int EATING_TIME = 90;
     private static final int THINKING_TIME = 30;
-    private static final int ITERATIONS = 100;
+    private static final int ITERATIONS = 50;
 
-    private final ForkGroup forkGroup;
     private final Integer ID;
     private long starvingTime = 0;
+    private final Fork left;
+    private final Fork right;
 
-    public Philosopher(int i, ForkGroup forkGroup) {
+    public Philosopher(int i, Fork left, Fork right) {
         this.ID = i;
-        this.forkGroup = forkGroup;
+        this.left = left;
+        this.right = right;
     }
 
     @Override
     public void run() {
-        for (int i = 0; i < ITERATIONS; i++) {
+        int i = 0;
+        while (i < ITERATIONS) {
             think();
-            try {
-                eat();
-            } catch (InterruptedException exception) {
-                break;
-            }
+            eat();
+            i++;
         }
     }
 
@@ -334,23 +306,24 @@ class Philosopher extends Thread {
         action(THINKING_TIME);
     }
 
-    public void eat() throws InterruptedException {
-        synchronized (forkGroup){
-            long before = System.nanoTime();
+    public void eat() {
+        boolean success = false;
+        long before = System.currentTimeMillis();
 
-            while (!forkGroup.isAvailable()) {
-                wait();
-            }
-            forkGroup.pickUp();
-
-            long after = System.nanoTime() - before;
-            starvingTime += after;
+        while (!success) {
+            if (left.tryAcquire()) {
+                if (right.tryAcquire()) {
+                    long after = System.currentTimeMillis() - before;
+                    starvingTime += after;
 
 //            System.out.println("eating " + ID);
-            action(EATING_TIME);
+                    action(EATING_TIME);
+                    success = true;
 
-            forkGroup.putDown();
-            notify();
+                    right.release();
+                }
+                left.release();
+            }
         }
     }
 
@@ -363,7 +336,7 @@ class Main {
     public static Integer PHILOSOPHERS_NUM = 5;
 
     public static void main(String[] args) {
-        var times = testCaseWrapper();
+        var times = testCase();
         var stringBuilder = new StringBuilder();
         for (var t : times) {
             stringBuilder.append(t);
@@ -380,27 +353,6 @@ class Main {
         }
     }
 
-    public static long[] testCaseWrapper() {
-        var times = new LinkedList<long[]>();
-
-        IntStream.range(0, 10).forEach(i -> {
-            var results = testCase();
-            times.add(results);
-        });
-
-        return Arrays.stream(
-                times
-                        .stream()
-                        .reduce(new long[PHILOSOPHERS_NUM], (sums, r) -> {
-                            IntStream.range(0, PHILOSOPHERS_NUM).forEach(i -> {
-                                sums[i] += r[i];
-                            });
-                            return sums;
-                        }))
-                .map(v -> v / times.size())
-                .toArray();
-    }
-
     public static long[] testCase() {
         var philosophers = new Philosopher[PHILOSOPHERS_NUM];
         var forks = new Fork[philosophers.length];
@@ -410,8 +362,7 @@ class Main {
         });
 
         IntStream.range(0, PHILOSOPHERS_NUM).forEach(i -> {
-            var forkGroup = new ForkGroup(forks[i], forks[(i + 1) % forks.length]);
-            philosophers[i] = new Philosopher(i, forkGroup);
+            philosophers[i] = new Philosopher(i, forks[i], forks[(i + 1) % forks.length]);
         });
 
         var executor = Executors.newFixedThreadPool(5);
@@ -419,7 +370,7 @@ class Main {
         executor.shutdown();
 
         try {
-            executor.awaitTermination(60, TimeUnit.SECONDS);
+            executor.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
         } catch (InterruptedException ignored) {
         }
 
@@ -444,8 +395,8 @@ Po wykonaniu programu stworzono wykres czasów.
 
 \newpage
 \section{Wnioski}
-Wykres prezentuje sytuację, w której doszło do zagłodzenia jednego z filozofów. Oznacza to, że wątek ten długo oczekiwał na dostęp do zasobów (grupy widelców). Wątki 2 oraz 4 były częściowo zagłodzone. Zaletą takiej implementacji jest brak możliwości zakleszczenia się, gdyż każdy z filozofów uzyskuje lub czeka na parę widelców, przez co nie może dojść co cyklicznego zakleszczenia, które obserwowaliśmy w zadaniu 1.
-
+Wykres prezentuje dosć wyrównane wyniki, każdy wątek czekał około pięciu sekund. Różnica między najdłuższym czekaniem, a najkrótszym to sekunda. Można stwierdzić więc, że wątek 3 został zagłodzony, ponieważ długo czekał na dostęp do swojej grupy widelców. Zaletą takiej implementacji jest brak możliwości zakleszczenia się, gdyż każdy z filozofów uzyskuje lub czeka na parę widelców, przez co nie może dojść co cyklicznego zakleszczenia, które obserwowaliśmy w zadaniu 1.
+Problem występujący w tym wariancie to \emph{zagłodzenie}, czyli wątek, który oczekuje na dostęp do zasobu, będzie długo oczekiwał na jego otrzymanie. 
 
 
 \section{Zadanie 3}
