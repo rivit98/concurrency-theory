@@ -1,10 +1,6 @@
 package zad1;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.util.LinkedList;
-import java.util.concurrent.*;
+import java.util.concurrent.Executors;
 
 class Main {
     public static void main(String[] args) {
