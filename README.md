@@ -7,3 +7,5 @@ Tasks + solutions
 * [task 4](./lab4): Producent-comsumer problem, Java Concurrency Library
 * [task 5](./lab5): Readers–writers problem, fine-grained locking
 * [task 6](./lab6): Dining philosophers problem
+* [task 7](./lab7): Active-object pattern
+* [task 8](./lab8): Executor pattern, Future pattern
