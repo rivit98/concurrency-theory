@@ -1,17 +1,35 @@
 package future;
 
-public class Future {
-    private Object object;
+import java.util.List;
 
-    public Object get() {
+public class Future {
+    private List<Integer> object;
+    private boolean done = false;
+
+    public List<Integer> get() {
         return object;
     }
 
-    public void set(Object o) {
+    public void set(List<Integer> o) {
         object = o;
+        complete();
     }
 
-    public boolean isAvailable(){
-        return object != null;
+    public synchronized void complete(){
+        done = true;
+        notify();
+    }
+
+    public boolean isCompleted(){
+        return done;
+    }
+
+    public synchronized void await(){
+        while(!isCompleted()){
+            try {
+                wait();
+            } catch (InterruptedException ignored) {
+            }
+        }
     }
 }

@@ -1,33 +1,36 @@
 package servant;
 
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 
 public class Servant {
-    private final Queue<Object> queue = new LinkedList<>();
+    private final Queue<Integer> queue = new LinkedList<>();
+
     private final int capacity;
 
     public Servant(int capacity) {
         this.capacity = capacity;
     }
 
-    public void put(Object data){
-        queue.add(data);
+    public void put(List<Integer> data){
+        queue.addAll(data);
     }
 
-    public Object get(){
-        return queue.remove();
+    public List<Integer> get(int elements){
+        List<Integer> out = new LinkedList<>();
+        while(elements-- > 0){
+           out.add(queue.remove());
+        }
+
+        return out;
     }
 
     public int size(){
         return queue.size();
     }
 
-    public boolean isEmpty(){
-        return queue.isEmpty();
-    }
-
-    public boolean isFull(){
-        return size() == capacity;
+    public int getCapacity() {
+        return capacity;
     }
 }

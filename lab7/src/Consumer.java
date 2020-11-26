@@ -1,5 +1,8 @@
+import future.Future;
 import proxy.BufferProxy;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Consumer extends Thread {
@@ -11,24 +14,34 @@ public class Consumer extends Thread {
         this.totalNumberToGet = totalNumberToGet;
     }
 
+    public void _sleep(int milis){
+        try{
+            sleep(milis);
+        }catch (InterruptedException ignored){
+        }
+    }
+
     @Override
     public void run(){
+        long id = Thread.currentThread().getId();
+
+        List<Future> futureList = new LinkedList<>();
+        int elementsLeft = totalNumberToGet;
         var random = ThreadLocalRandom.current();
-        for (int i = 0; i < totalNumberToGet; i++) {
-            var future = proxy.get();
-            while(!future.isAvailable()){
-                try{
-                    sleep(20);
-                }catch (InterruptedException ignored){
-                }
-            }
+        while(elementsLeft > 0) {
+            int toGet = Math.min(elementsLeft, random.nextInt(5) + 1);
+            elementsLeft -= toGet;
 
-            System.out.println("Consumer " + Thread.currentThread().getId() + " got: " + future.get());
+            var future = proxy.get(toGet);
+            futureList.add(future);
 
-            try {
-                sleep(100);
-            } catch (InterruptedException ignored) {
-            }
+            _sleep(100);
         }
+
+        System.out.println("Consumer " + id + " finished requesting!");
+        for(var f : futureList){
+            f.await();
+        }
+        System.out.println("Consumer " + id + " finished job!");
     }
 }

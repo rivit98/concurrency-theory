@@ -6,6 +6,8 @@ import request.GetRequest;
 import scheduler.Scheduler;
 import servant.Servant;
 
+import java.util.List;
+
 public class BufferProxy {
     private final Servant servant;
     private final Scheduler scheduler = new Scheduler();
@@ -17,13 +19,15 @@ public class BufferProxy {
         scheduler.start();
     }
 
-    public void put(Object o) {
-        scheduler.insert(new AddRequest(servant, o));
+    public Future put(List<Integer> o) {
+        var future = new Future();
+        scheduler.insert(new AddRequest(future, servant, o));
+        return future;
     }
 
-    public Future get() {
+    public Future get(int numberOfElements) {
         var future = new Future();
-        scheduler.insert(new GetRequest(future, servant));
+        scheduler.insert(new GetRequest(future, servant, numberOfElements));
         return future;
     }
 }
