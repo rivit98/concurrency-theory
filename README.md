@@ -9,3 +9,4 @@ Tasks + solutions
 * [task 6](./lab6): Dining philosophers problem
 * [task 7](./lab7): Active-object pattern
 * [task 8](./lab8): Executor pattern, Future pattern
+* [task 9](./lab9): JavaScript - async/await, promise, waterfall, callbacks, execution model
