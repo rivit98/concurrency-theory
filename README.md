@@ -1,7 +1,7 @@
 # Concurrency theory, AGH UST, 2020
 Tasks + solutions
 
-* [laboratory 1](./lab1): Race condition
+* [laboratory 1](./lab1): Race conditions
 * [laboratory 2](./lab2): Java monitors, binary semaphores, counting semaphores, shared resources
 * [laboratory 3](./lab3): Producent-comsumer problem, pipeline
 * [laboratory 4](./lab4): Producent-comsumer problem, Java Concurrency Library
