@@ -11,4 +11,5 @@ Tasks + solutions
 * [laboratory 8](./lab8): Executor pattern, Future pattern
 * [laboratory 9](./lab9): JavaScript - async/await, promise, waterfall, callbacks, execution model
 * [laboratory 10](./lab10): Trace theory, Foata normal form, Diekiert graph, dependency and independency relations
-* [laboratory 11](./lab10): Automation of laboratory 10
+* [laboratory 11](./lab11): Automation of laboratory 10
+* [laboratory 12](./lab12): Petri nets
