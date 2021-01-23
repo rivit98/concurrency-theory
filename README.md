@@ -13,3 +13,4 @@ Tasks + solutions
 * [laboratory 10](./lab10): Trace theory, Foata normal form, Diekiert graph, dependency and independency relations
 * [laboratory 11](./lab11): Automation of laboratory 10
 * [laboratory 12](./lab12): Petri nets
+* [laboratory 13](./lab12): CSP

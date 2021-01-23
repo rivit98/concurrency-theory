@@ -1,0 +1,21 @@
+## Java
+.mtj.tmp/
+*.class
+*.war
+*.ear
+*.nar
+
+## IntelliJ
+out/
+.idea/
+.idea_modules/
+
+## Gradle
+bin/
+build/
+.gradle
+.gradletasknamecache
+gradle-app.setting
+!gradle-wrapper.jar
+testDirs
+observed_folders.db
