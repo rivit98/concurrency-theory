@@ -312,7 +312,7 @@ class Problem:
         def tuple_to_str(t):
             return "(" + ', '.join(t) + ")"
 
-        print("Relacja zależności I = ", end='')
+        print("Relacja niezależności I = ", end='')
         print(f"{{{', '.join(map(tuple_to_str, sorted(self.independency_rel)))}}}")
 
         self.dependency_rel = self.calculate_dependency_relation()
