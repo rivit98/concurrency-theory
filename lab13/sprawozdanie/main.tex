@@ -55,7 +55,7 @@
 
 
 
-\section{Ćwiczenie}
+\section{Zadanie}
 Zaimplementuj w Javie z użyciem JCSP rozwiązanie problemu producenta i konsumenta z buforem N-elementowym tak, aby każdy element bufora był reprezentowany przez odrębny proces (taki wariant
 ma praktyczne uzasadnienie w sytuacji, gdy pamięć lokalna procesora wykonującego proces bufora jest na tyle mała, że mieści tylko jedną
 porcję). Uwzględnij dwie możliwości:
@@ -66,9 +66,11 @@ oraz kolejność pobierania nie mają znaczenia
 jakiej były umieszczane w buforze
 \end{enumerate}
 
-\section{Rozwiązanie}
-Na podstawie podanego pseudokodu zaimplementowałem oba warianty z wykorzystaniem biblioteki JCSP.
-\subsection{Wariant bez uwzględnienia kolejności}
+\section{Wariant bez uwzględnienia kolejności}
+\subsection{Koncept rozwiązania}
+Wariant ten jest dużo prostszy w implementacji niż poprzedni. Zostanie on zaimplementowany w sposób, w którym każda komórka bufora będzie posiadała referencję do trzech kanałów (producenta, konsumenta oraz kanału 'jeszcze', który będzie sygnalizował czy dana komórka bufora jest dostępna czy zajęta (czy są w niej dane czy jest pusta). Każda komórka bufora będzie w nieskończonej pętli najpierw sygnalizować, że jest dostępna, a później będzie oczekiwać na to, aż jeden z producentów zapisze do niej dane oraz jeden z konsumentów odczyta z niej dane. Każdy z producentów będzie korzystał z klasy \emph{Alternative}, która (w dużym uproszczeniu) wybiera jedną z dostępnych komórek bufora (jesli żadna nie jest dostępna to producent będzie musiał poczekać). Po otrzymaniu dostępu, oznacza on komórkę jako zajętą i wpisuje do niej dane. Konsumenci będą również korzystać z klasy \emph{Alternative} w celu zlokalizowania komórki z danymi. Po odczytaniu danych, komórka zostaje oznaczona jako pusta i gotowa do przyjęcia danych.
+
+\subsection{Implementacja oraz wyniki}
 \begin{minted}[frame=lines,
                 framesep=2mm
                 ]{java}
@@ -183,7 +185,11 @@ Wykonanie programu dało następujące wyniki:
 178ms
 \end{minted}
 
-\subsection{Wariant z uwzględnieniem kolejności}
+\section{Wariant z uwzględnieniem kolejności}
+\subsection{Koncepcja rozwiązania}
+Wariant ten polega na tym, że dane będą przetwarzane po kolei - każda komórka bufora będzie przechowywał referencję na swojego następnika. Ostatnia komórka bufora będzie posiadała wskazanie na obiekt konsumenta, przez co uzyskamy niejako przetwarzanie potokowe. Producent wstawi dane do pierwszej komórki bufora, w tym czasie komórka pierwsza przekaże dane do drugiej (oczywiście jeśli druga jest pusta) itd. aż ostatni bufor poda dane do konsumenta, który je przetworzy. Taki sposób przetwarzania zapewni nam kolejność produkowanych i odbieranych danych niezależnie od ilości producentów i konsumentów.
+
+\subsection{Implementacja oraz wyniki}
 \begin{minted}[frame=lines,
                 framesep=2mm
                 ]{java}
@@ -273,6 +279,7 @@ Wykonanie programu dało następujące wyniki:
 211ms
 \end{minted}
 
+\newpage
 \section{Wnioski}
 Biblioteka JCSP dostarcza użytkownikowi przyjaznego interfejsu do modelowania problemów z dziedziny współbieżności. Za jej pomocą udało się zaimplementować problem producenta i konsumera z rozproszonym buforem. Porównując czasy wykonania powyższych programów można wyciągnąć wniosek, że wersja uwzględniająca kolejność pobierania elementów jest nieco wolniejsza od wersji, która tej kolejności nie zachowuje. Dzieje się tak dlatego, że dbanie o kolejność zajmuje dodatkowy czas procesora, ale mimo tego różnice nie są bardzo duże względem siebie.
 
